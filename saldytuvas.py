@@ -115,7 +115,7 @@ def main(run = True):
             remove_product(name)
         if choice == '3':
             name = input('What product you are looking for?')
-            check_product(name)
+            check_product_quantity(name)
         if choice == '4':
             print_content_fridge
         if choice == '5':
@@ -151,13 +151,5 @@ def main(run = True):
         else:
             print("Netinkamas pasirinkimas. Bandykite dar kartą.")
 
-
-add_product('pienas', 1.5)
-add_product('pienas', 2.3)
-add_product('pomidoras', 7.58)
-add_product('kiausiniai', 50)
-check_product('pienas')
-print_content_fridge()
-check_recepy()
-
-main()
+if __name__ == "__main__":       
+    main()
