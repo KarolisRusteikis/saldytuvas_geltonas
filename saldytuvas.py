@@ -3,17 +3,18 @@
 
 Reikalavimai:
 
-* Šaldytuvo turinys - žodynas, kurio raktas yra produkto pavadinimas, reikšmė - kiekis (float).
-* Pridėti produktą į šaldytuvą. Pridedant egzistuojantį produktą, kiekiai sudedami su esančiais.
-* Išimti produktą iš šaldytuvo. Išimant egzistuojantį produktą, kiekis atitinkamai sumažinamas.
-* Patikrinti, ar reikiamas produkto kiekis yra šaldytuve.
-* Išspausdinti visą šaldytuvo turinį su kiekiais.
+* User inputo, terminalo meniu, iseiga.
+* Šaldytuvo turinys - žodynas, kurio raktas yra produkto pavadinimas, reikšmė - kiekis (float). Yra
+* Pridėti produktą į šaldytuvą. Pridedant egzistuojantį produktą, kiekiai sudedami su esančiais. Yra
+* Išimti produktą iš šaldytuvo. Išimant egzistuojantį produktą, kiekis atitinkamai sumažinamas. Yra
+* Patikrinti, ar reikiamas produkto kiekis yra šaldytuve. Yra
+* Išspausdinti visą šaldytuvo turinį su kiekiais. Reikia
 
 BONUS:
 
 * Patikrinti, ar receptas išeina. 
 ** Recepto įvedimas vyksta viena eilute, kuri po to išdalinama. Pva.: Sūris: 0.5, Pomidoras: 2, Duona: 0.4
-** Jeigu receptas neišeina, išvardinti kiek ir kokių produktų trūksta.
+*** Jeigu receptas neišeina, išvardinti kiek ir kokių produktų trūksta.
 
 """
 
@@ -21,19 +22,31 @@ BONUS:
 
 fridge_content = {}
 
-def add_product(produktas, kiekis):
-    fridge_content[produktas] = fridge_content.get(produktas, 0) + kiekis
-    print(f"Šaldytuve yra: {fridge_content}")
-
-def remove_product(produktas, kiekis):
-    if produktas in fridge_content:
-        fridge_content[produktas] -= kiekis
-        if fridge_content[produktas] <= 0:
-            del fridge_content[produktas]
-        print(f"Iš šaldytuvo išimta: {kiekis} {produktas}")
-        print(f"Šaldytuve dabar yra: {fridge_content}")
+def add_product(key, value = 0):
+    if key in fridge_content.keys():
+        fridge_content[key] = fridge_content[key] + value
+        print(f'{value} of {key} has been added to the fridge.')
+        print(fridge_content)
     else:
-        print(f"Šaldytuve nėra: {produktas}.")
+        fridge_content[key] = value
+        print(f'{value} of {key} has been added to the fridge.')
+        print(fridge_content)
+
+def remove_product(name):
+    
+    if name in fridge_content.keys():
+        print(f'Would you like to remove all {name} form the fridge?')
+        condition = input('y/n: ')
+        if condition.lower() == 'y':
+            del fridge_content[name]
+            print(f'Item {name} has been removed from the fridge')
+            print(f'Fridge now has: {fridge_content}')
+        elif condition.lower() == 'n':
+            print(f'Type amount of {name} you would like to remove')
+            r_product = input()
+            fridge_content[name] = fridge_content[name] - r_product
+    else:
+        print('Item has not been found in the fridge, maybe you have already removed it from the fridge')
 
 def check_product_quantity(produktas, reikalingas_kiekis):
     if produktas in fridge_content and fridge_content[produktas] >= reikalingas_kiekis:
@@ -41,41 +54,79 @@ def check_product_quantity(produktas, reikalingas_kiekis):
     else:
         print(f"Šaldytuve nepakanka: {produktas}")
 
-def print_fridge_content():
-    print("Šaldytuve šiuo metu yra: ")
-    for produktas, kiekis in fridge_content.items():
-        print(f"{produktas}: {kiekis}")
+def print_content_fridge():
+    
+    for key, value in fridge_content.items():
+        print(f'* {key} : {value}')
 
-def check_recipe(receptas):
-    reikalingi_produktai = dict(item.split(": ") for item in receptas.split(", "))
-    truksta_produktu = {}
+# Bonus tasks
 
-    for produktas, kiekis in reikalingi_produktai.items():
-        kiekis = float(kiekis)
-        if produktas in fridge_content and fridge_content[produktas] >= kiekis:
-            continue
+def recepy_create(input_string):
+    recepy = {}    
+    pairs = input_string.split(',')
+    
+    for pair in pairs:
+        key_value = pair.strip().split(':')
+        
+        if len(key_value) == 2:
+            key = key_value[0].strip()
+            value = key_value[1].strip()
+            
+            try:
+                recepy[key] = float(value)
+            except ValueError:
+                recepy[key] = value  
         else:
-            truksta_kiekis = kiekis - fridge_content.get(produktas, 0)
-            truksta_produktu[produktas] = truksta_kiekis
+            print(f"Ignoring invalid pair: {pair}")
+    
+    print('Recepy has beed created:')
+    for key in recepy:
+        print(f'{key} : {recepy[key]}')
+    return recepy
+    
 
-    if truksta_produktu:
-        print("Receptui įgyvendinti trūksta šių produktų: ")
-        for produktas, truksta_kiekis in truksta_produktu.items():
-            print(f"{produktas}: {truksta_kiekis}")
-    else:
-        print("Visko turim, einam gaminti!")
+def check_recepy(fridge_content, recepy):
+    pass
 
-def main():
-    while True:
-        print("\nPasitinkite veiksmą")
-        print("1. Įdėti į šaldytuvą")
-        print("2. Išimti iš šaldytuvo")
-        print("3. Patikrinti ar yra šaldytuve")
-        print("4. Peržiūrėti visą šaldytuvo turinį")
-        print("5. Patikrinti ar užtenka produktų receptui")
-        print("0. Išeiti iš programos")
 
-        choice = input("Pasirinkite: ")
+# Main function
+
+def main(run = True):
+
+    while run == True:
+
+        print("Yellow Submerged Fridge")
+        print("0: Exit")
+        print("1: Add to the fridge")
+        print("2: Remove from the fridge")
+        print("3: Check for Product")
+        print("4: Show conntent of the fridge")
+        print("5: Recepy creation")
+        choice = input("Choice: ")
+        if choice == "0":
+            run == False
+            break
+        if choice == '1':
+            key = input('What product would you like to add?: ')
+            value = input('Ammount of product you want to add: ')
+            add_product(key, value)
+        if choice == '2':
+            name = input('What product would you like to remove?: ')
+            remove_product(name)
+        if choice == '3':
+            name = input('What product you are looking for?')
+            check_product(name)
+        if choice == '4':
+            print_content_fridge
+        if choice == '5':
+            recepy = input('Please write items needed for recepy: ')
+            recepy_create(recepy)
+
+
+
+
+        
+        
 
         if choice == "1":
             produktas = input("Pasirinkite produktą: ")
@@ -91,14 +142,22 @@ def main():
             check_product_quantity(produktas, reikalingas_kiekis)
         elif choice == "5":
             receptas = input("Įveskite reikiamus produktus ir jų kiekius (pvz: Kiaušinis: 3, Sūris: 0.5 ir t.t.: ")
-            check_recipe(receptas)
+            check_recepy(receptas)
         elif choice == "4":
-            print_fridge_content()
+            print_content_fridge()
         elif choice == "0":
             print("Programos pabaiga.")
             break
         else:
             print("Netinkamas pasirinkimas. Bandykite dar kartą.")
 
-if __name__ == "__main__":
-    main()
+
+add_product('pienas', 1.5)
+add_product('pienas', 2.3)
+add_product('pomidoras', 7.58)
+add_product('kiausiniai', 50)
+check_product('pienas')
+print_content_fridge()
+check_recepy()
+
+main()
