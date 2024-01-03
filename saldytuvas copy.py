@@ -18,7 +18,6 @@ BONUS:
 """
 
 
-
 fridge_content = {}
 
 def add_product(produktas, kiekis):
