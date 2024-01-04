@@ -66,6 +66,7 @@ def check_recipe(receptas):
 
 def main():
     while True:
+        print("\n[--GELTONAS ŠALDYTUVAS--]")
         print("\nPasitinkite veiksmą")
         print("1. Įdėti į šaldytuvą")
         print("2. Išimti iš šaldytuvo")
